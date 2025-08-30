@@ -1,0 +1,53 @@
+import:
+    java.net.URL
+    javax.imageio.ImageIO
+    java.awt.Color
+    net.md_5.bungee.api.ChatColor
+
+command /skullchat <offlineplayer> <string>:
+    trigger:
+        set {_s::*} to SkullChat(arg-1, 8)
+        set {_s::1} to join {_s::1}, " &6✦ ᴛʜᴀɴᴋ ʏᴏᴜ %arg-1%! ✦"
+        set {_s::2} to join {_s::2}, " &bꜰᴏʀ ѕᴜᴘᴘᴏʀᴛɪɴɢ" 
+        set {_s::3} to join {_s::3}, " &bᴄʀʏѕᴛᴀʟᴠᴇʀѕᴇ!"
+        set {_s::4} to join {_s::4}, " &e➜ ᴘᴜʀᴄʜᴀѕᴇᴅ: %arg-2%"
+        set {_s::5} to join {_s::5}, " &aѕᴜᴘᴘᴏʀᴛ ᴜѕ: /ѕᴛᴏʀᴇ!"
+        set {_s::6} to join {_s::6}, " "
+        set {_s::7} to join {_s::7}, " &a⚡ɢɢ ᴡᴀᴠᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ!⚡"
+        set {_m} to minimessage from "<rainbow>ᴛʏᴘᴇ ɢɢ ᴛᴏ ᴄᴇʟᴇʙʀᴀᴛᴇ!"
+        set {_s::8} to text component from "%{_s::8}% %{_m}%"        
+        broadcast {_s::*}
+        set {GGWave::event} to true
+        wait 15 seconds
+        clear {GGWave::event}
+        set {_m} to minimessage from "<rainbow>ɢɢ ᴡᴀᴠᴇ ᴇɴᴅᴇᴅ!"
+        send text component from "%{_m}%"   
+
+function SkullChat(p: offlineplayer, d: number) :: strings:
+    if uuid of {_p} is not set:
+        set {_player} to "c3208a43-901d-492c-a7d2-ea91d58c7b78"
+    else:
+        set {_player} to uuid of {_p}
+    set {_loc} to new URL("https://crafatar.com/avatars/%{_player}%/?size=%{_d}%")
+    set {_image} to ImageIO.read({_loc})
+    set {_height} to {_image}.getHeight()
+    set {_width} to {_image}.getWidth()
+    set {_size} to {_d}
+    set {_mult1} to {_height} / {_size}
+    set {_mult2} to {_width} / {_size}
+
+    loop {_size} times:
+        loop {_size} times:
+            set {_rgb} to {_image}.getRGB((((loop-value-1) - 1) * {_mult2}), (((loop-value-2) - 1) * {_mult1}))
+            set {_color} to new (the class "java.awt.Color")({_rgb})
+            set {_chatcolor} to (the class "net.md_5.bungee.api.ChatColor").of({_color})
+            set {_image1::%loop-value-2%} to join {_image1::%loop-value-2%}, {_chatcolor}.toString(), "&l⬛"
+    return {_image1::*}
+
+on chat:
+    if {GGWave::event} is true:
+        if message contains "gg":
+            set {_message} to random element out of "&6&lGG", "&9&lGG", "&a&o&lGG", "&b&n&lGG", "&c&k&lGG", "&d&m&lGG", "&e&r&lGG"
+            set message to {_message}
+            add 1000 to player's balance 
+            send "You were rewarded for participating in the GG wave!"
