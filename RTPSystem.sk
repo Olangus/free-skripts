@@ -1,0 +1,105 @@
+options: 
+    prefix: &6&lRTP | &f
+    limit: 1000 #! IN BLOCKS
+
+command /rtp:
+    trigger:
+        rtpmenu(player)
+
+function rtp(p: player, type: text):
+    if {_type} is not "nether":
+        while {_teleported} is not set:
+            set {_x} to round(random number between -{@limit} and {@limit})
+            set {_z} to round(random number between -{@limit} and {@limit})
+            set {_block} to block at location at ({_x}, 50, {_z}) in world {_type}
+            if {_block} is not air:
+                send "{@prefix}Successfully teleported to a random location" to {_p}
+                set {_block} to highest solid block at location({_x}, 50, {_z}, world {_type})
+                teleport {_p} above {_block}
+                set {_teleported} to true
+            wait 1 second
+    else:
+        while {_teleported} is not set:
+            set {_x} to round(random number between -{@limit} and {@limit})
+            set {_z} to round(random number between -{@limit} and {@limit})
+            set {_block} to block at location at ({_x}, 50, {_z}) in world {_type}
+            loop all blocks above {_block}:
+                block below loop-block is not water
+                block below loop-block is not air
+                if block above loop-block is air:
+                    teleport {_p} to loop-block
+                    send "{@prefix}Successfully teleported to a random location" to {_p}
+                    set {_teleported} to true
+            wait 1 second
+
+function rtpmenu(p: player):
+    set metadata tag "RandomTeleportMenu" of {_p} to virtual chest inventory with 5 rows named "&8Random Teleporation Menu"
+    set slot 20 of metadata tag "RandomTeleportMenu" of {_p} to skull of "novatic11" parsed as offline player named "<##75f57a>&lOverWorld" with lore "&8%smallcaps("rtp")%" and "&f" and "&2 | &a%smallcaps("information")%" and "&2 | &fCost: &a&lFREE" and "&2 | &fUsage: Teleporation" and "&f" and "&f%smallcaps("Click here to rtp to the")% &a%smallcaps("overworld")%"
+    set slot 22 of metadata tag "RandomTeleportMenu" of {_p} to skull of "_Magma_Cube_" parsed as offline player named "<##df2626>&lNether" with lore "&8%smallcaps("rtp")%" and "&f" and "&4 | &c%smallcaps("information")%" and "&4 | &fCost: &2$&a2,500" and "&4 | &fUsage: Teleporation" and "&f" and "&f%smallcaps("Click here to rtp to the")% &c%smallcaps("nether")%"
+    set slot 24 of metadata tag "RandomTeleportMenu" of {_p} to skull of "EndstoneMiner" parsed as offline player named "<##F3F39E>&lEnd" with lore "&8%smallcaps("rtp")%" and "&f" and "<##B3B37E> | <##F3F39E>%smallcaps("information")%" and "<##B3B37E> | &fCost: &2$&a5,000" and "<##B3B37E> | &fUsage: Teleporation" and "&f" and "&f%smallcaps("Click here to rtp to the")% <##B3B37E>%smallcaps("end")%"  
+    loop 44 times:
+        add 1 to {_n}
+        if {_n} = 11 or 20 or 29:
+            add 7 to {_n}
+        set slot ({_n} - 1) of metadata tag "RandomTeleportMenu" of {_p} to gray stained glass pane named "&f"
+    open (metadata tag "RandomTeleportMenu" of {_p}) to {_p}
+
+
+on world change:
+    if player is in world "end":
+        if {visitedend::%player's uuid%} is not set:
+            set {visitedend::%player's uuid%} to true
+
+on inventory click:
+    if event-inventory contains (metadata tag "RandomTeleportMenu" of player):
+        cancel event
+        if clicked slot is 20:
+            close player's inventory
+            rtp(player, "overworld")
+        if clicked slot is 22:
+            if balance of player >= 2500:
+                close player's inventory
+                rtp(player, "nether")
+                remove 2500 from player's balance
+            else:
+                send "{@prefix}You cannot afford this RTP"
+        if clicked slot is 24:
+            if {visitedend::%player's uuid%} = true:
+                if balance of player >= 5000:
+                    close player's inventory
+                    rtp(player, "end")
+                    remove 5000 from player's balance
+                else:
+                    send "{@prefix}You cannot afford this RTP"
+            else:
+                send "{@prefix}You must visit the end atleast once before being able to rtp in it!"
+
+
+function smallcaps(t: text) :: text:
+    replace all "a" with "ᴀ" in {_t} if {_t} contains "a"
+    replace all "b" with "ʙ" in {_t} if {_t} contains "b"
+    replace all "c" with "ᴄ" in {_t} if {_t} contains "c"
+    replace all "d" with "ᴅ" in {_t} if {_t} contains "d"
+    replace all "e" with "ᴇ" in {_t} if {_t} contains "e"
+    replace all "f" with "ғ" in {_t} if {_t} contains "f"
+    replace all "g" with "ɢ" in {_t} if {_t} contains "g"
+    replace all "h" with "ʜ" in {_t} if {_t} contains "h"
+    replace all "i" with "ɪ" in {_t} if {_t} contains "i"
+    replace all "j" with "ᴊ" in {_t} if {_t} contains "j"
+    replace all "k" with "ᴋ" in {_t} if {_t} contains "k"
+    replace all "l" with "ʟ" in {_t} if {_t} contains "l"
+    replace all "m" with "ᴍ" in {_t} if {_t} contains "m"
+    replace all "n" with "ɴ" in {_t} if {_t} contains "n"
+    replace all "o" with "ᴏ" in {_t} if {_t} contains "o"
+    replace all "p" with "ᴘ" in {_t} if {_t} contains "p"
+    replace all "q" with "ǫ" in {_t} if {_t} contains "q"
+    replace all "r" with "ʀ" in {_t} if {_t} contains "r"
+    replace all "s" with "ꜱ" in {_t} if {_t} contains "s"
+    replace all "t" with "ᴛ" in {_t} if {_t} contains "t"
+    replace all "u" with "ᴜ" in {_t} if {_t} contains "u"
+    replace all "v" with "ᴠ" in {_t} if {_t} contains "v"
+    replace all "w" with "ᴡ" in {_t} if {_t} contains "q"
+    replace all "x" with "x" in {_t} if {_t} contains "x"
+    replace all "y" with "ʏ" in {_t} if {_t} contains "y" 
+    replace all "z" with "ᴢ" in {_t} if {_t} contains "z"
+    return {_t}
