@@ -2,31 +2,8 @@ on join:
   set player's tab list header to "&f%nl%<##72DE15>&LG<##75E220>&LR<##78E52C>&LA<##7BE937>&LN<##7EED43>&LD<##80F04E>&LH<##83F45A>&LA<##86F865>&LV<##89FB71>&LE<##8CFF7C>&LN%nl%&8%smallcaps("season one")%%nl%&f"
   set player's tab list footer to "&f%nl%&2%smallcaps("MMORPG")% &8* &f%placeholder "player_ping" from player%ms &8* &a%smallcaps("Grandhaven.minehut.net")% %nl%&a%placeholder "server_online"% &f%smallcaps("global")%%nl%"
 
-function smallcaps(t: text) :: text:
-    replace all "a" with "ᴀ" in {_t} if {_t} contains "a"
-    replace all "b" with "ʙ" in {_t} if {_t} contains "b"
-    replace all "c" with "ᴄ" in {_t} if {_t} contains "c"
-    replace all "d" with "ᴅ" in {_t} if {_t} contains "d"
-    replace all "e" with "ᴇ" in {_t} if {_t} contains "e"
-    replace all "f" with "ғ" in {_t} if {_t} contains "f"
-    replace all "g" with "ɢ" in {_t} if {_t} contains "g"
-    replace all "h" with "ʜ" in {_t} if {_t} contains "h"
-    replace all "i" with "ɪ" in {_t} if {_t} contains "i"
-    replace all "j" with "ᴊ" in {_t} if {_t} contains "j"
-    replace all "k" with "ᴋ" in {_t} if {_t} contains "k"
-    replace all "l" with "ʟ" in {_t} if {_t} contains "l"
-    replace all "m" with "ᴍ" in {_t} if {_t} contains "m"
-    replace all "n" with "ɴ" in {_t} if {_t} contains "n"
-    replace all "o" with "ᴏ" in {_t} if {_t} contains "o"
-    replace all "p" with "ᴘ" in {_t} if {_t} contains "p"
-    replace all "q" with "ǫ" in {_t} if {_t} contains "q"
-    replace all "r" with "ʀ" in {_t} if {_t} contains "r"
-    replace all "s" with "ꜱ" in {_t} if {_t} contains "s"
-    replace all "t" with "ᴛ" in {_t} if {_t} contains "t"
-    replace all "u" with "ᴜ" in {_t} if {_t} contains "u"
-    replace all "v" with "ᴠ" in {_t} if {_t} contains "v"
-    replace all "w" with "ᴡ" in {_t} if {_t} contains "q"
-    replace all "x" with "x" in {_t} if {_t} contains "x"
-    replace all "y" with "ʏ" in {_t} if {_t} contains "y" 
-    replace all "z" with "ᴢ" in {_t} if {_t} contains "z"
-    return {_t}
+function smallcaps(text: text) :: text:
+	loop split "ᴀ,a|ʙ,b|ᴄ,c|ᴅ,d|ᴇ,e|ꜰ,f|ɢ,g|ʜ,h|ɪ,i|ǫ,q|ᴊ,j|ᴋ,k|ʟ,l|ᴍ,m|ɴ,n|ᴏ,o|ᴘ,p|Q,q|ʀ,r|ꜱ,s|ᴛ,t|ᴜ,u|ᴠ,v|ᴡ,w|x,x|ʏ,y|ᴢ,z" at "|":
+		set {_a::*} to split loop-value at ","
+		replace all {_a::2} with {_a::1} in {_text}
+	return {_text}
