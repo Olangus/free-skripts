@@ -89,3 +89,9 @@ on death:
                     set {FinishedQuest::%attacker's uuid%} to true
                     clear {ChosenMission::%attacker's uuid%} and {StartedMission::%attacker's uuid%} and {Killedattackers::%attacker's uuid%} and {MissionReward::%attacker's uuid%} and {RewardMoney::%attacker's uuid%}
                     set {MissionLastCompleted::%attacker's uuid%} to now
+
+function smallcaps(text: text) :: text:
+	loop split "ᴀ,a|ʙ,b|ᴄ,c|ᴅ,d|ᴇ,e|ꜰ,f|ɢ,g|ʜ,h|ɪ,i|ǫ,q|ᴊ,j|ᴋ,k|ʟ,l|ᴍ,m|ɴ,n|ᴏ,o|ᴘ,p|Q,q|ʀ,r|ꜱ,s|ᴛ,t|ᴜ,u|ᴠ,v|ᴡ,w|x,x|ʏ,y|ᴢ,z" at "|":
+		set {_a::*} to split loop-value at ","
+		replace all {_a::2} with {_a::1} in {_text}
+	return {_text}
