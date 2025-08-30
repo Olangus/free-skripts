@@ -6,9 +6,7 @@ options:
  
 on load:
     registerTimeItems(1, clock, "&6&lMagical Clock", 108000 seconds) # USE SAME SYNTAX TO CREATE MORE ITEMS THAT WILL ADD TIME.
-
-on load:
-  register new shaped recipe for {timer::item::1} using diamond, diamond, diamond, diamond, clock, diamond, diamond, diamond and diamond with id "1"
+  	register new shaped recipe for {timer::item::1} using diamond, diamond, diamond, diamond, clock, diamond, diamond, diamond and diamond with id "1"
 
 command /clockitems:
 	trigger:
@@ -48,31 +46,8 @@ function formatTime(time: timespan) :: string:
     set {_second} to "%{_timespan::3}%%first character of {_timespan::4}%"
     return ("%{_first}% %{_second}%" if {_timespan::3} is set, else "%{_first}%")
  
-function smallcaps(t: text) :: text:
-    replace all "a" with "ᴀ" in {_t} if {_t} contains "a"
-    replace all "b" with "ʙ" in {_t} if {_t} contains "b"
-    replace all "c" with "ᴄ" in {_t} if {_t} contains "c"
-    replace all "d" with "ᴅ" in {_t} if {_t} contains "d"
-    replace all "e" with "ᴇ" in {_t} if {_t} contains "e"
-    replace all "f" with "ғ" in {_t} if {_t} contains "f"
-    replace all "g" with "ɢ" in {_t} if {_t} contains "g"
-    replace all "h" with "ʜ" in {_t} if {_t} contains "h"
-    replace all "i" with "ɪ" in {_t} if {_t} contains "i"
-    replace all "j" with "ᴊ" in {_t} if {_t} contains "j"
-    replace all "k" with "ᴋ" in {_t} if {_t} contains "k"
-    replace all "l" with "ʟ" in {_t} if {_t} contains "l"
-    replace all "m" with "ᴍ" in {_t} if {_t} contains "m"
-    replace all "n" with "ɴ" in {_t} if {_t} contains "n"
-    replace all "o" with "ᴏ" in {_t} if {_t} contains "o"
-    replace all "p" with "ᴘ" in {_t} if {_t} contains "p"
-    replace all "q" with "ǫ" in {_t} if {_t} contains "q"
-    replace all "r" with "ʀ" in {_t} if {_t} contains "r"
-    replace all "s" with "ꜱ" in {_t} if {_t} contains "s"
-    replace all "t" with "ᴛ" in {_t} if {_t} contains "t"
-    replace all "u" with "ᴜ" in {_t} if {_t} contains "u"
-    replace all "v" with "ᴠ" in {_t} if {_t} contains "v"
-    replace all "w" with "ᴡ" in {_t} if {_t} contains "q"
-    replace all "x" with "x" in {_t} if {_t} contains "x"
-    replace all "y" with "ʏ" in {_t} if {_t} contains "y" 
-    replace all "z" with "ᴢ" in {_t} if {_t} contains "z"
-    return {_t}
+function smallcaps(text: text) :: text:
+	loop split "ᴀ,a|ʙ,b|ᴄ,c|ᴅ,d|ᴇ,e|ꜰ,f|ɢ,g|ʜ,h|ɪ,i|ǫ,q|ᴊ,j|ᴋ,k|ʟ,l|ᴍ,m|ɴ,n|ᴏ,o|ᴘ,p|Q,q|ʀ,r|ꜱ,s|ᴛ,t|ᴜ,u|ᴠ,v|ᴡ,w|x,x|ʏ,y|ᴢ,z" at "|":
+		set {_a::*} to split loop-value at ","
+		replace all {_a::2} with {_a::1} in {_text}
+	return {_text}
