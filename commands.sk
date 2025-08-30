@@ -1,0 +1,23 @@
+options:
+    storelink: https://servername.tebex.io/
+    discordlink: https://discord.com/servername
+
+command /store:
+    trigger:
+        set {_m} to a new text component from "&b&lSTORE | &fClick here to visit our webstore!"
+        set hover event of {_m} to hover event showing "&a%smallcapz("click to view")%"
+        set click event of {_m} to click event to open url "{@storelink}"
+        send text component {_m} to player
+
+command /discord:
+    trigger:
+        set {_m} to a new text component from "&9&lDISCORD | &fClick here to join our Discord server!"
+        set hover event of {_m} to hover event showing "&a%smallcapz("click to view")%"
+        set click event of {_m} to click event to open url "{@discordlink}"
+        send text component {_m} to player
+
+function smallcapz(text: text) :: text:
+	loop split "ᴀ,a|ʙ,b|ᴄ,c|ᴅ,d|ᴇ,e|ꜰ,f|ɢ,g|ʜ,h|ɪ,i|ǫ,q|ᴊ,j|ᴋ,k|ʟ,l|ᴍ,m|ɴ,n|ᴏ,o|ᴘ,p|Q,q|ʀ,r|ꜱ,s|ᴛ,t|ᴜ,u|ᴠ,v|ᴡ,w|x,x|ʏ,y|ᴢ,z" at "|":
+		set {_a::*} to split loop-value at ","
+		replace all {_a::2} with {_a::1} in {_text}
+	return {_text}
