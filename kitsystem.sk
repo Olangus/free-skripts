@@ -68,7 +68,6 @@ on respawn:
                 set slot {_slot} of player to {inventory::%{autokitname::%player's uuid%}%::%{_slot}%}
                 add 1 to {_slot}
 
-
 command /autokit:
     trigger:
         autokit(player, ({autokittype::%player's uuid%} ? "inventory"), ({autokitname::%player's uuid%} ? "N/A"), ({autokit::%player's uuid%} ? false))
