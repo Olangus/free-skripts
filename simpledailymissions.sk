@@ -1,0 +1,91 @@
+options: #!NEEDED ACTIONS IN ORDER TO COMPLETE THE DAILY MISSION
+    prefix: &6&lMISSIONS | &f
+    neededkills: 10
+    neededblocks: 150
+
+on join:
+    CheckMission(player)
+
+command /missions:
+    trigger:
+        CheckMission(player)
+        DailyMissions(player)
+
+function CheckMission(p: player):
+    set {_waited} to difference between {MissionLastCompleted::%{_p}'s uuid%} and now
+    if {_waited} is less than 24 hours:
+        stop
+    else:
+        if {ChosenMission::%{_p}'s uuid%} is not set:
+            clear {FinishedQuest::%{_p}'s uuid%}
+            set {_random} to random integer between 1 and 2
+            if {_random} = 1:
+                set {ChosenMission::%{_p}'s uuid%} to "Mining"
+            else if {_random} = 2:
+                set {ChosenMission::%{_p}'s uuid%} to "Killing"
+            set {_random} to random integer between 1 and 2
+            if {_random} = 1:
+                set {MissionReward::%{_p}'s uuid%} to random integer between 50 and 250
+                set {RewardMoney::%{_p}'s uuid%} to true
+            else if {_random} = 2:
+                set {_amount} to random integer between 2 and 5
+                set {MissionReward::%{_p}'s uuid%} to {_amount} of golden apples
+            send "{@prefix}You can now do your Daily Mission!" to {_p}
+
+function DailyMissions(p: player):
+    set metadata tag "DailyMissions" of {_p} to virtual dropper inventory named "&8Daily Missions"
+    if {StartedMission::%{_p}'s uuid%} = true:
+        set {_started} to "&a%smallcaps("you started this quest")%"
+    else:
+        set {_started} to "&7%smallcaps("click to start this quest")%"
+    if {RewardMoney::%{_p}'s uuid%} = true:
+        set {_reward} to "&2$&a%{MissionReward::%{_p}'s uuid%}%"
+    else:
+        set {_reward} to "&ax%{MissionReward::%{_p}'s uuid%}%"
+    if {ChosenMission::%{_p}'s uuid%} = "Mining":
+        set slot 4 of metadata tag "DailyMissions" of {_p} to diamond pickaxe named "&f&lMining Mission" with lore "&8%smallcaps("mission")%" and "&f" and "&8 | &7%smallcaps("information")%" and "&8 | &fObjective: &fMine {@neededblocks} Blocks" and "&8 | &fProgress: %{MinedBlocks::%{_p}'s uuid%} ? 0%/{@neededblocks} blocks" and "&f" and "&8 | &7%smallcaps("reward")%" and "&8 | &f+ %{_reward}%" and "&f" and "&7%{_started}%" with all item flags
+    if {ChosenMission::%{_p}'s uuid%} = "Killing":
+        set slot 4 of metadata tag "DailyMissions" of {_p} to diamond sword named "&f&lKilling Mission" with lore "&8%smallcaps("mission")%" and "&f" and "&8 | &7%smallcaps("information")%" and "&8 | &fObjective: &fKill {@neededkills} Players" and "&8 | &fProgress: %{KilledPlayers::%{_p}'s uuid%} ? 0%/{@neededkills} kills" and "&f" and "&8 | &7%smallcaps("reward")%" and "&8 | &f+ %{_reward}%" and "&f" and "&7%{_started}%" with all item flags
+    if {FinishedQuest::%{_p}'s uuid%} = true:
+        set slot 4 of metadata tag "DailyMissions" of {_p} to barrier named "&a&lFinished Quest!" with lore "&8%smallcaps("mission")%" and "&f" and "&fCome back tomorrow to get" and "&fan other mission!"
+    open (metadata tag "DailyMissions" of {_p}) to {_p} 
+
+on inventory click:
+    if event-inventory contains (metadata tag "DailyMissions" of player):
+        cancel event
+        if clicked slot is 4:
+            if {StartedMission::%player's uuid%} is not set:
+                set {StartedMission::%player's uuid%} to true
+                close player's inventory
+                set {_item} to event-item
+                send "{@prefix}Successfully started a %{ChosenMission::%player's uuid%}% mission!" to player
+
+on break:
+    if {StartedMission::%player's uuid%} = true:
+        if {ChosenMission::%player's uuid%} = "Mining":
+            add 1 to {MinedBlocks::%player's uuid%}
+            if {MinedBlocks::%player's uuid%} >= {@neededblocks}:
+                send "{@prefix}Finished your Daily Mining Quest!" to player
+                if {RewardMoney::%player's uuid%} = true:
+                    add {MissionReward::%player's uuid%} to player's balance
+                else:
+                    give {MissionReward::%player's uuid%} to player
+                set {FinishedQuest::%player's uuid%} to true
+                clear {ChosenMission::%player's uuid%} and {StartedMission::%player's uuid%} and {MinedBlocks::%player's uuid%} and {MissionReward::%player's uuid%} and {RewardMoney::%player's uuid%}
+                set {MissionLastCompleted::%player's uuid%} to now
+
+on death:
+    if victim and attacker is a player:
+        force victim to respawn
+        if {StartedMission::%attacker's uuid%} = true:
+            if {ChosenMission::%attacker's uuid%} = "Killing":
+                add 1 to {Killedattackers::%attacker's uuid%}
+                if {Killedattackers::%attacker's uuid%} >= {@neededkills}:
+                    send "{@prefix}Finished your Daily Killing Quest!" to attacker
+                    if {RewardMoney::%attacker's uuid%} = true:
+                        add {MissionReward::%attacker's uuid%} to attacker's balance
+                    else:
+                        give {MissionReward::%attacker's uuid%} to attacker
+                    set {FinishedQuest::%attacker's uuid%} to true
+                    clear {ChosenMission::%attacker's uuid%} and {StartedMission::%attacker's uuid%} and {Killedattackers::%attacker's uuid%} and {MissionReward::%attacker's uuid%} and {RewardMoney::%attacker's uuid%}
+                    set {MissionLastCompleted::%attacker's uuid%} to now
