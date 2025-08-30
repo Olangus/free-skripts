@@ -1,0 +1,13 @@
+on load:
+    set {explosive::sword} to unbreakable iron sword named "&7&lExplosive Sword" with lore "&8%smallcaps("sword")%" and "&f" and "&8 | &7%smallcaps("information")%" and "&8 | &fHas 40%% Chance to explode" and "&8 | &fwhen attacking another player"
+
+on damage:
+    if attacker is holding {explosive::sword}:
+        chance of 40%:
+            create a safe explosion of force 0.5 at the victim
+
+function smallcaps(text: text) :: text:
+	loop split "ᴀ,a|ʙ,b|ᴄ,c|ᴅ,d|ᴇ,e|ꜰ,f|ɢ,g|ʜ,h|ɪ,i|ǫ,q|ᴊ,j|ᴋ,k|ʟ,l|ᴍ,m|ɴ,n|ᴏ,o|ᴘ,p|Q,q|ʀ,r|ꜱ,s|ᴛ,t|ᴜ,u|ᴠ,v|ᴡ,w|x,x|ʏ,y|ᴢ,z" at "|":
+		set {_a::*} to split loop-value at ","
+		replace all {_a::2} with {_a::1} in {_text}
+	return {_text}
