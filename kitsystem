@@ -1,0 +1,146 @@
+#! REQUIREMENTS:
+#! SKBEE
+#! SKRIPT
+
+options:
+    prefix: &6&lKIT | &F
+
+on tab complete of "/kit":
+    set tab completions for position 1 to "save", "load", "delete", "list"
+    set tab completions for position 2 to "<name>"
+
+on tab complete of "/autokit":
+    set tab completions for position 1 to "<armor/inventory>"
+    set tab completions for position 2 to "<name>"
+    set tab completions for position 3 to "<true/false>"
+
+command /kit [<text>] [<text>]:
+    permission: op
+    permission message: {@prefix}You cannot use this command!
+    usage: {@prefix}Usage: &6/&ekit <save/load/delete> <name>
+    trigger:
+        if arg-1 = "save":
+            if {inventory::%arg-2%::1} is not set:
+                saveinventory(player, arg-2, false)
+                send "{@prefix}Successfully saved &e%arg-2% &fkit!"
+                set {kitname::%arg-2%} to arg-2
+            else:
+                send "{@prefix}This kit already exists!"
+        if arg-1 = "load":
+            if {inventory::%arg-2%::1} is set:
+                send "{@prefix}Successfully loaded kit!"
+                saveinventory(player, arg-2, true)
+            else:
+                send "{@prefix}This kit does not exist!"
+        if arg-1 = "delete":
+            if {inventory::%arg-2%::1} is set:
+                delete {kitname::%arg-2%}
+                set {_slot} to 0
+                loop 36 times:
+                    clear {inventory::%arg-2%::%{_slot}%}
+                    add 1 to {_slot}
+                send "{@prefix}Successfully deleted the kit &e%arg-2%"
+            else:
+                send "{@prefix}This kit does not exist!"
+        if arg-1 = "list":
+            set {_m} to join indexes of {kitname::*} with ", " in proper case
+            send "{@prefix}Kit list: &e%{_m} ? "N/A"%"
+
+command /kitload [<text>] <player>:
+    trigger:
+        if command sender is console:
+            if {inventory::%arg-1%::1} is set:
+                send "{@prefix}Successfully loaded kit!"
+                saveinventory(arg-2, arg-1, true)
+            else:
+                send "{@prefix}This kit does not exist!" 
+        else:
+            send "{@prefix}&fThis command can only be used by the console"
+            
+on respawn:
+    if {autokit::%player's uuid%} = true:
+        if {autokittype::%player's uuid%} = "inventory":
+            saveinventory(player, "%{autokitname::%player's uuid%}%", true)
+        else if {autokittype::%player's uuid%} = "armor":
+            broadcast "1"
+            set {_slot} to 36
+            loop 4 times:
+                set slot {_slot} of player to {inventory::%{autokitname::%player's uuid%}%::%{_slot}%}
+                add 1 to {_slot}
+
+
+command /autokit:
+    trigger:
+        autokit(player, ({autokittype::%player's uuid%} ? "inventory"), ({autokitname::%player's uuid%} ? "N/A"), ({autokit::%player's uuid%} ? false))
+
+function autokit(p: player, type: text, name: text, enabled: boolean):
+    set metadata tag "Autokit" of {_p} to virtual chest inventory with 5 rows named "&8AutoKit Settings"
+    loop 45 times:
+        add 1 to {_n}
+        if {_n} = 11 or 20 or 29:
+            add 7 to {_n}
+        set slot ({_n} - 1) of metadata tag "Autokit" of {_p} to gray stained glass pane named "&f"
+    if {_type} = "inventory":
+        set slot 20 of metadata tag "Autokit" of {_p} to chest named "&e&lInventory" with all item flags
+    if {_type} = "armor":
+        set slot 20 of metadata tag "Autokit" of {_p} to diamond chestplate named "&e&lArmor" with all item flags
+    set slot 22 of metadata tag "Autokit" of {_p} to oak sign named "&fKit: &e%{_name}%" with all item flags
+    if {_enabled} = true:
+        set slot 24 of metadata tag "Autokit" of {_p} to lime dye named "&a&lEnabled" with all item flags
+    else if {_enabled} = false:
+        set slot 24 of metadata tag "Autokit" of {_p} to red dye named "&c&lDisabled" with all item flags
+    open (metadata tag "Autokit" of {_p}) to {_p}
+
+on inventory click:
+    if event-inventory contains (metadata tag "Autokit" of player):
+        cancel event
+        if clicked slot is 20:
+            set {_item} to event-item
+            if {_item} = chest named "&e&lInventory":
+                set slot 20 of metadata tag "Autokit" of player to diamond chestplate named "&e&lArmor" with all item flags
+                set {autokittype::%player's uuid%} to "armor"
+            if {_item} = diamond chestplate named "&e&lArmor":
+                set slot 20 of metadata tag "Autokit" of player to chest named "&e&lInventory" with all item flags
+                set {autokittype::%player's uuid%} to "inventory"
+            broadcast {autokittype::%player's uuid%}
+        if clicked slot is 22:
+            close player's inventory
+            set {choosingautokitname::%player's uuid%} to true
+            send "{@prefix}Type the kit name in chat!" to player
+        if clicked slot is 24:
+            set {_item} to event-item
+            if {_item} = lime dye named "&a&lEnabled":
+                set slot 24 of metadata tag "Autokit" of player to red dye named "&c&lDisabled" with all item flags
+                set {autokit::%player's uuid%} to false
+            if {_item} = red dye named "&c&lDisabled":
+                set slot 24 of metadata tag "Autokit" of player to lime dye named "&a&lEnabled" with all item flags
+                set {autokit::%player's uuid%} to true
+
+on chat:
+    if {choosingautokitname::%player's uuid%} = true:
+        if message = "stop":
+            cancel event
+            delete {choosingautokitname::%player's uuid%}
+            autokit(player, ({autokittype::%player's uuid%} ? "inventory"), ({autokitname::%player's uuid%} ? "N/A"), ({autokit::%player's uuid%} ? false))
+        else:
+            set {_message} to message
+            cancel event
+            if {kitname::%{_message}%} is set:
+                set {autokitname::%player's uuid%} to {_message}
+                autokit(player, ({autokittype::%player's uuid%} ? "inventory"), ({autokitname::%player's uuid%} ? "N/A"), ({autokit::%player's uuid%} ? false))
+            
+            else:
+                send "{@prefix}Please, enter a valid kit name, if you do not wish to do so, type 'stop' " to player
+                make player execute command "/kit list"
+
+function saveinventory(p: player, name: text, load: boolean):
+    if {_load} = false:
+        set {_slot} to 0
+        loop 41 times:
+            set {inventory::%{_name}%::%{_slot}%} to slot {_slot} of {_p}'s inventory
+            add 1 to {_slot}
+    if {_load} = true:
+        set {_slot} to 0
+        loop 41 times:
+            set slot {_slot} of {_p} to {inventory::%{_name}%::%{_slot}%}
+            add 1 to {_slot}
