@@ -1,0 +1,33 @@
+on load:
+    set {wither::sword} to unbreakable netherite sword named "&8&lWither Sword" with lore "&8%smallcaps("sword")%" and "&f" and "&0 | &8%smallcaps("abilities")%" and "&0 | &fRight Click: Wither Attack" and "&0 | &f20%% Chance: Apply Wither Effect"
+    enchant {wither::sword} with sharpness 3
+
+on player's held item change:
+    if player's tool = {wither::sword}:
+        apply potion of speed 1 to the player for 999999999999 minutes
+        apply potion of resistance 1 to the player for 999999999999 minutes
+    else:
+        remove speed from the player
+        remove resistance from the player
+
+on damage:
+    if attacker is holding {wither::sword}: 
+        set {lastwithereffect::%attacker's uuid%} to now - 1 minute if {lastwithereffect::%attacker's uuid%} is not set
+        if difference between {lastwithereffect::%attacker's uuid%} and now >= 40 seconds:
+            chance of 20%:
+                apply wither effect to victim for 10 seconds
+                set {lastwithereffect::%attacker's uuid%} to now
+
+on right click:
+    if player is holding {wither::sword}:
+        set {lastwitherskull::%player's uuid%} to now - 1 minute if {lastwitherskull::%player's uuid%} is not set
+        if difference between {lastwitherskull::%player's uuid%} and now >= 60 seconds:
+            spawn wither skull at player
+            set item cooldown of player's tool for player to 1 minute
+            set {lastwitherskull::%player's uuid%} to now
+
+function smallcaps(text: text) :: text:
+	loop split "ᴀ,a|ʙ,b|ᴄ,c|ᴅ,d|ᴇ,e|ꜰ,f|ɢ,g|ʜ,h|ɪ,i|ǫ,q|ᴊ,j|ᴋ,k|ʟ,l|ᴍ,m|ɴ,n|ᴏ,o|ᴘ,p|Q,q|ʀ,r|ꜱ,s|ᴛ,t|ᴜ,u|ᴠ,v|ᴡ,w|x,x|ʏ,y|ᴢ,z" at "|":
+		set {_a::*} to split loop-value at ","
+		replace all {_a::2} with {_a::1} in {_text}
+	return {_text}
