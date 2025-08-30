@@ -1,0 +1,56 @@
+options:
+    autographperpage: 3
+
+command /autograph:
+    trigger:
+        give player GiveBook(player)
+
+on right click on player:
+    if player is sneaking:
+        if player is holding written book:
+            if player has permission "autograph.send":
+                set {_m::1} to a new text component of "%player% sent you an autograph request! Click here to accept it!"
+                set hover event of {_m::1} to a new hover event showing "&a%smallcaps("click to accept")%"
+                set click event of {_m::1} to click event to run command "/autographaccept %player%"
+                send text component {_m::1} to target entity
+                send "Successfully sent au autograph request! They have 30 seconds to accept it" to player
+                set {PendingAutograph::%player's uuid%} to true
+                set {PendingAutograph::%target entity's uuid%} to true
+                wait 30 seconds
+                if {PendingAutograph::%player's uuid%} = true:
+                    send "Your autograph request has expired!" to player
+                    clear {PendingAutograph::%player's uuid%}
+                    clear {PendingAutograph::%target entity's uuid%}
+
+command /autographaccept <player>:
+    trigger:
+        if {PendingAutograph::%player's uuid%} = true:
+            clear {PendingAutograph::%player's uuid%}
+            clear {PendingAutograph::%arg-1's uuid%}
+            send "You accepted the autograph request!" to player
+            send "%player% has accepted your autograph request" to arg-1
+            add player to {autographs::%arg-1's uuid%::*}
+
+
+function GiveBook(p: player):: itemtype:
+    set {_book} to a written book
+    set {_a::1} to text component of "&8&lAutograph Book:"
+    set {_a::2} to text component of "%nl%&f%nl%&8Total Autographs:"
+    set {_a::3} to text component of " &2%size of {autographs::%{_p}'s uuid%::*} ? 0%"
+    set page 1 of book {_book} to {_a::1} and {_a::2} and {_a::3}
+    set {_page} to 2
+    set {_count::%{_page}%} to 0
+    loop {autographs::%{_p}'s uuid%::*}:
+        add 1 to {_count::%{_page}%}
+        if {_count::%{_page}%} = {@autographperpage}:
+            broadcast {_b::%{_page}%::*} 
+            set page {_page} of book {_book} to {_b::%{_page}%::*} 
+            add 1 to {_page}
+            broadcast "NEW PAGE!"
+        set {_b::%{_page}%::%{_count::%{_page}%}%} to text component of "&8 - %loop-value%%nl%"
+        broadcast {_b::%{_page}%::*} 
+    if {_page} = 2:
+        set page {_page} of book {_book} to {_b::%{_page}%::*} 
+    set book author of {_book} to "%{_p}%"
+    set book title of {_book} to "%{_p}%'s Autograph Book"
+    return 1 of {_book} named "&f&lAUTOGRAPH BOOK"
