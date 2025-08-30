@@ -1,0 +1,46 @@
+options:
+    storelink: https://servername.tebex.io/
+    discordlink: https://discord.com/servername
+
+command /freestore:
+    trigger:
+        set {_m} to a new text component from "&b&lSTORE | &fClick here to visit our webstore!"
+        set hover event of {_m} to hover event showing "&a%smallcapz("click to view")%"
+        set click event of {_m} to click event to open url "{@storelink}"
+        send text component {_m} to player
+
+command /freediscord:
+    trigger:
+        set {_m} to a new text component from "&9&lDISCORD | &fClick here to join our Discord server!"
+        set hover event of {_m} to hover event showing "&a%smallcapz("click to view")%"
+        set click event of {_m} to click event to open url "{@discordlink}"
+        send text component {_m} to player
+
+function smallcapz(t: text) :: text:
+    replace all "a" with "ᴀ" in {_t} if {_t} contains "a"
+    replace all "b" with "ʙ" in {_t} if {_t} contains "b"
+    replace all "c" with "ᴄ" in {_t} if {_t} contains "c"
+    replace all "d" with "ᴅ" in {_t} if {_t} contains "d"
+    replace all "e" with "ᴇ" in {_t} if {_t} contains "e"
+    replace all "f" with "ғ" in {_t} if {_t} contains "f"
+    replace all "g" with "ɢ" in {_t} if {_t} contains "g"
+    replace all "h" with "ʜ" in {_t} if {_t} contains "h"
+    replace all "i" with "ɪ" in {_t} if {_t} contains "i"
+    replace all "j" with "ᴊ" in {_t} if {_t} contains "j"
+    replace all "k" with "ᴋ" in {_t} if {_t} contains "k"
+    replace all "l" with "ʟ" in {_t} if {_t} contains "l"
+    replace all "m" with "ᴍ" in {_t} if {_t} contains "m"
+    replace all "n" with "ɴ" in {_t} if {_t} contains "n"
+    replace all "o" with "ᴏ" in {_t} if {_t} contains "o"
+    replace all "p" with "ᴘ" in {_t} if {_t} contains "p"
+    replace all "q" with "ǫ" in {_t} if {_t} contains "q"
+    replace all "r" with "ʀ" in {_t} if {_t} contains "r"
+    replace all "s" with "ꜱ" in {_t} if {_t} contains "s"
+    replace all "t" with "ᴛ" in {_t} if {_t} contains "t"
+    replace all "u" with "ᴜ" in {_t} if {_t} contains "u"
+    replace all "v" with "ᴠ" in {_t} if {_t} contains "v"
+    replace all "w" with "ᴡ" in {_t} if {_t} contains "q"
+    replace all "x" with "x" in {_t} if {_t} contains "x"
+    replace all "y" with "ʏ" in {_t} if {_t} contains "y" 
+    replace all "z" with "ᴢ" in {_t} if {_t} contains "z"
+    return {_t}
